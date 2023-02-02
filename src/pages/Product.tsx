@@ -1,3 +1,4 @@
+import React, {ChangeEvent} from 'react'
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
@@ -120,26 +121,42 @@ const Button = styled.button`
   }
 `;
 
+interface ProductProps {}
+
+interface ProductState {
+  product: {
+    title?: string;
+    desc?: string;
+    price?: number;
+    img?: string;
+    color?: string[];
+    size?: string[];
+  };
+  quantity: number;
+  color: string;
+  size: string;
+}
+
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
-  const [product, setProduct] = useState({});
-  const [quantity, setQuantity] = useState(1);
-  const [color, setColor] = useState("");
-  const [size, setSize] = useState("");
+  const [product, setProduct] = useState<ProductState["product"]>({});
+  const [quantity, setQuantity] = useState<ProductState["quantity"]>(1);
+  const [color, setColor] = useState<ProductState["color"]>("");
+  const [size, setSize] = useState<ProductState["size"]>("");
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const res = await publicRequest.get("/products/find/" + id);
+        const res = await publicRequest.get<ProductState["product"]>("/products/find/" + id);
         setProduct(res.data);
       } catch {}
     };
     getProduct();
   }, [id]);
 
-  const handleQuantity = (type) => {
+  const handleQuantity = (type: "dec" | "inc") => {
     if (type === "dec") {
       quantity > 1 && setQuantity(quantity - 1);
     } else {
