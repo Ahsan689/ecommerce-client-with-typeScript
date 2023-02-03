@@ -6,7 +6,7 @@ interface Product {
   title: string;
   desc: string;
   price: number;
-  img: string;
+  image: string;
   color: string[];
   size: string[];
 }

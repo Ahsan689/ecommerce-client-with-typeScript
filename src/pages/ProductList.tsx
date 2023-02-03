@@ -38,13 +38,19 @@ const Select = styled.select`
 `;
 const Option = styled.option``;
 
+interface Filters {
+  color?: string;
+  size?: string;
+}
+
 const ProductList = () => {
   const location = useLocation();
   const cat = location.pathname.split("/")[2];
-  const [filters, setFilters] = useState({});
-  const [sort, setSort] = useState("newest");
+  console.log(cat,"cat")
+  const [filters, setFilters] = useState<Filters>({});
+  const [sort, setSort] = useState<string | "newest" | "asc" | "desc">("newest");
 
-  const handleFilters = (e) => {
+  const handleFilters = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setFilters({
       ...filters,
@@ -80,7 +86,7 @@ const ProductList = () => {
         </Filter>
         <Filter>
           <FilterText>Sort Products:</FilterText>
-          <Select onChange={(e) => setSort(e.target.value)}>
+          <Select onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSort(e.target.value)}>
             <Option value="newest">Newest</Option>
             <Option value="asc">Price (asc)</Option>
             <Option value="desc">Price (desc)</Option>

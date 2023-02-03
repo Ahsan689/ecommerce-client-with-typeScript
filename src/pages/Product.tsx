@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { publicRequest } from "../requestMethods";
 import { addProduct } from "../redux/cartRedux";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 
 const Container = styled.div``;
 
@@ -141,7 +142,7 @@ interface ProductObj {
   title: string;
   desc: string;
   price: number;
-  img: string;
+  image: string;
   color: string[];
   size: string[];
 }
@@ -156,7 +157,15 @@ interface ProductState {
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
-  const [product, setProduct] = useState<ProductObj>({});
+  console.log(id,"id")
+  const [product, setProduct] = useState<ProductObj>({
+    title: '',
+    desc: '',
+    price: 0,
+    image: '',
+    color: [],
+    size: []
+  });
   const [quantity, setQuantity] = useState<ProductState["quantity"]>(1);
   const [color, setColor] = useState<ProductState["color"]>("");
   const [size, setSize] = useState<ProductState["size"]>("");
@@ -165,7 +174,8 @@ const Product = () => {
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const res = await publicRequest.get<ProductObj>("/products/find/" + id);
+        // const res = await publicRequest.get<ProductObj>("/products/find/" + id);
+        const res = await axios.get<ProductObj>(`https://fakestoreapi.com/products/${id}`);
         setProduct(res.data);
       } catch {}
     };
@@ -182,7 +192,7 @@ const Product = () => {
 
   const handleClick = () => {
     dispatch(
-      addProduct({ ...product, quantity, color, size })
+      addProduct({product: { ...product }, quantity, color, size })
     );
   };
   return (
@@ -191,7 +201,7 @@ const Product = () => {
       <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src={product.img} />
+          <Image src={product.image} />
         </ImgContainer>
         <InfoContainer>
           <Title>{product.title}</Title>
