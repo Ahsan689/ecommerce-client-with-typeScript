@@ -123,15 +123,31 @@ const Button = styled.button`
 
 interface ProductProps {}
 
+// interface ProductState {
+//   product: {
+//     title?: string;
+//     desc?: string;
+//     price?: number;
+//     img?: string;
+//     color?: string[];
+//     size?: string[];
+//   };
+//   quantity: number;
+//   color: string;
+//   size: string;
+// }
+
+interface ProductObj {
+  title: string;
+  desc: string;
+  price: number;
+  img: string;
+  color: string[];
+  size: string[];
+}
+
 interface ProductState {
-  product: {
-    title?: string;
-    desc?: string;
-    price?: number;
-    img?: string;
-    color?: string[];
-    size?: string[];
-  };
+  product:ProductObj;
   quantity: number;
   color: string;
   size: string;
@@ -140,7 +156,7 @@ interface ProductState {
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
-  const [product, setProduct] = useState<ProductState["product"]>({});
+  const [product, setProduct] = useState<ProductObj>({});
   const [quantity, setQuantity] = useState<ProductState["quantity"]>(1);
   const [color, setColor] = useState<ProductState["color"]>("");
   const [size, setSize] = useState<ProductState["size"]>("");
@@ -149,7 +165,7 @@ const Product = () => {
   useEffect(() => {
     const getProduct = async () => {
       try {
-        const res = await publicRequest.get<ProductState["product"]>("/products/find/" + id);
+        const res = await publicRequest.get<ProductObj>("/products/find/" + id);
         setProduct(res.data);
       } catch {}
     };
