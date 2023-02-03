@@ -12,15 +12,12 @@ import {
 } from "react-router-dom";
 import Success from "./pages/Success";
 import { useSelector } from "react-redux";
+// import type {RootState} from './redux/store'
+import {useAppSelector} from './redux/store'
 
 const App = () => {
 
-  type UserState = {
-    currentUser: any;
-    isFetching: boolean;
-    error: boolean;
-  };
-  const user = useSelector((state:{user:UserState}) => state.user.currentUser);
+  const user = useAppSelector((state) => state.user.currentUser);
   return (
     <Routes>
         <Route exact path="/">

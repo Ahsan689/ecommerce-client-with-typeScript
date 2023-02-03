@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { login } from "../redux/apiCalls";
 import { mobile } from "../responsive";
 import { useDispatch, useSelector } from "react-redux";
+// import type {RootState} from '../redux/store'
+import {useAppSelector} from '../redux/store'
 
 const Container = styled.div`
   width: 100vw;
@@ -72,9 +74,9 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const { isFetching, error } = useSelector((state) => state.user);
+  const { isFetching, error } = useAppSelector((state) => state.user);
 
-  const handleClick = (e) => {
+  const handleClick = (e:any) => {
     e.preventDefault();
     login(dispatch, { username, password });
   };

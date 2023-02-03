@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useSelector } from 'react-redux'
 import cartReducer from "./cartRedux";
 import userReducer from "./userRedux";
 import {
@@ -35,4 +36,6 @@ export const store = configureStore({
 });
 
 export let persistor = persistStore(store);
-export type RootState = ReturnType<typeof store.getState>
+type RootState = ReturnType<typeof store.getState>
+
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
