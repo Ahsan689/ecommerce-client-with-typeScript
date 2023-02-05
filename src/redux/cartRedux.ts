@@ -34,12 +34,20 @@ const cartSlice = createSlice({
   reducers: {
     addProduct: (state, action:PayloadAction<ProductState>) => {
       let { product, quantity, color, size } = action.payload;
+      console.log(quantity, state.t_quantity,"qnty")
       state.t_quantity += 1;
       state.products.push({ product, quantity, color, size });
       state.total += product.price * action.payload.quantity;
     },
+    clearCartProducts: (state, action:PayloadAction<ProductState>) => {
+      // let { product, quantity, color, size } = action.payload;
+      // console.log(quantity, state.t_quantity,"qnty")
+      state.t_quantity = 0;
+      state.products = []
+      state.total = 0 ;
+    },
   },
 });
 
-export const { addProduct } = cartSlice.actions;
+export const { addProduct, clearCartProducts } = cartSlice.actions;
 export default cartSlice.reducer;

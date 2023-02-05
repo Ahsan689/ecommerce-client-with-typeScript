@@ -10,8 +10,11 @@ import { useEffect, useState } from "react";
 import { userRequest } from "../requestMethods";
 import { useHistory } from "react-router";
 import {useAppSelector} from '../redux/store'
+import { Link } from "react-router-dom";
+import { addProduct, clearCartProducts } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
-const KEY = process.env.REACT_APP_STRIPE;
+const KEY = process.env.REACT_APP_STRIPE || '';
 
 const Container = styled.div``;
 
@@ -32,14 +35,14 @@ const Top = styled.div`
   padding: 20px;
 `;
 
-const TopButton = styled.button`
+const TopButton = styled.button<{ buttonType?: string }>`
   padding: 10px;
   font-weight: 600;
   cursor: pointer;
-  border: ${(props) => props.type === "filled" && "none"};
+  border: ${(props) => props.buttonType === "filled" && "none"};
   background-color: ${(props) =>
-    props.type === "filled" ? "black" : "transparent"};
-  color: ${(props) => props.type === "filled" && "white"};
+    props.buttonType === "filled" ? "black" : "transparent"};
+  color: ${(props) => props.buttonType === "filled" && "white"};
 `;
 
 const TopTexts = styled.div`
@@ -140,12 +143,12 @@ const SummaryTitle = styled.h1`
   font-weight: 200;
 `;
 
-const SummaryItem = styled.div`
+const SummaryItem = styled.div<{ buttonType?: string }>`
   margin: 30px 0px;
   display: flex;
   justify-content: space-between;
-  font-weight: ${(props) => props.type === "total" && "500"};
-  font-size: ${(props) => props.type === "total" && "24px"};
+  font-weight: ${(props) => props.buttonType === "total" && "500"};
+  font-size: ${(props) => props.buttonType === "total" && "24px"};
 `;
 
 const SummaryItemText = styled.span``;
@@ -160,29 +163,75 @@ const Button = styled.button`
   font-weight: 600;
 `;
 
+interface stripeObj{
+  id:string
+}
+
+interface ProductObj {
+  title: string;
+  desc: string;
+  price: number;
+  image: string;
+  color: string[];
+  size: string[];
+}
+
+interface ProductState {
+  product:ProductObj;
+  quantity: number;
+  color: string;
+  size: string;
+}
+
 const Cart = () => {
   const cart = useAppSelector((state) => state.cart);
-  const [stripeToken, setStripeToken] = useState(null);
+  const [stripeToken, setStripeToken] = useState<stripeObj>({id:''});
+  const [product, setProduct] = useState<ProductObj>({
+    title: '',
+    desc: '',
+    price: 0,
+    image: '',
+    color: [],
+    size: []
+  });
+  const [quantity, setQuantity] = useState<ProductState["quantity"]>(1);
+  const [color, setColor] = useState<ProductState["color"]>("");
+  const [size, setSize] = useState<ProductState["size"]>("");
   const history = useHistory();
-
-  const onToken = (token) => {
+  const dispatch = useDispatch();
+  
+  const onToken = (token:stripeObj) => {
     setStripeToken(token);
   };
 
   useEffect(() => {
     const makeRequest = async () => {
-      try {
-        const res = await userRequest.post("/checkout/payment", {
-          tokenId: stripeToken.id,
-          amount: 500,
-        });
-        history.push("/success", {
-          stripeData: res.data,
-          products: cart, });
-      } catch {}
+      if(stripeToken){
+        try {
+          const res = await userRequest.post("/checkout/payment", {
+            tokenId:stripeToken.id,
+            amount: 500,
+          });
+          history.push("/success", {
+            stripeData: res.data,
+            products: cart, });
+        } catch {}
+        
+      }
     };
     stripeToken && makeRequest();
+
   }, [stripeToken, cart.total, history]);
+
+  function clearCartHandler(){
+
+    dispatch(
+            clearCartProducts({product: { title: '', desc: '', price: 0, image: '', color: [], size: []}
+          , quantity:0 , color:'', size:'' })
+        );
+  }
+
+ console.log(cart,"cart items")
   return (
     <Container>
       <Navbar />
@@ -190,26 +239,26 @@ const Cart = () => {
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
+        <Link to={'/'}><TopButton>CONTINUE SHOPPING </TopButton></Link>
           <TopTexts>
             <TopText>Shopping Bag(2)</TopText>
             <TopText>Your Wishlist (0)</TopText>
           </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          <TopButton onClick={clearCartHandler} buttonType={"filled"}>CLEAR CART</TopButton>
         </Top>
         <Bottom>
           <Info>
             {cart.products.map((product) => (
               <Product>
                 <ProductDetail>
-                  <Image src={product.img} />
+                  <Image src={product.product.image} />
                   <Details>
                     <ProductName>
-                      <b>Product:</b> {product.title}
+                      <b>Product:</b> {product.product.title}
                     </ProductName>
-                    <ProductId>
-                      <b>ID:</b> {product._id}
-                    </ProductId>
+                    {/* <ProductId>
+                      <b>ID:</b> {product.product.id}
+                    </ProductId> */}
                     <ProductColor color={product.color} />
                     <ProductSize>
                       <b>Size:</b> {product.size}
@@ -223,7 +272,7 @@ const Cart = () => {
                     <Remove />
                   </ProductAmountContainer>
                   <ProductPrice>
-                    $ {product.price * product.quantity}
+                    $ {product.product.price * product.quantity}
                   </ProductPrice>
                 </PriceDetail>
               </Product>
@@ -244,7 +293,7 @@ const Cart = () => {
               <SummaryItemText>Shipping Discount</SummaryItemText>
               <SummaryItemPrice>$ -5.90</SummaryItemPrice>
             </SummaryItem>
-            <SummaryItem type="total">
+            <SummaryItem buttonType="total">
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>

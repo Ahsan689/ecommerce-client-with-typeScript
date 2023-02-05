@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import {useAppSelector} from '../redux/store'
+
 
 const Container = styled.div`
   height: 60px;
@@ -69,7 +71,8 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = () => {
-  const quantity = useSelector(state=>state.cart.quantity)
+  const t_quantity = useAppSelector(state=>state.cart.t_quantity)
+  console.log(t_quantity,"t_quanty")
   return (
     <Container>
       <Wrapper>
@@ -88,7 +91,7 @@ const Navbar = () => {
           <MenuItem><Link to="/login">SIGN IN</Link> </MenuItem>
           <Link to="/cart">
           <MenuItem>
-            <Badge badgeContent={quantity} color="primary">
+            <Badge badgeContent={t_quantity} color="primary">
               <ShoppingCartOutlined />
             </Badge>
           </MenuItem>

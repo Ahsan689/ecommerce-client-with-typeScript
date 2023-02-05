@@ -67,7 +67,7 @@ const Icon = styled.div`
   }
 `;
 
-const Product = ({ item }) => {
+const Product = ({ item} :{ item: { id: number, image: string } }) => {
   console.log(item,"itt")
   return (
     <Container>
