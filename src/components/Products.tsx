@@ -11,7 +11,7 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 
-const Products = ({ cat, filters, sort }) => {
+const Products = ({ cat = "", filters = {}, sort = "" }:{ cat?: string, filters?: any, sort?: any }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
@@ -35,7 +35,7 @@ const Products = ({ cat, filters, sort }) => {
       setFilteredProducts(
         products.filter((item) =>
           Object.entries(filters).every(([key, value]) =>
-            item[key].includes(value)
+           item[key].includes(value)
           )
         )
       );
