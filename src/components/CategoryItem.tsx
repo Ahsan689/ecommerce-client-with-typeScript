@@ -43,7 +43,13 @@ const Button = styled.button`
     font-weight: 600;
 `;
 
-const CategoryItem = ({ item }) => {
+interface item {
+  id: number;
+  img: string;
+  title: string;
+  cat: string;
+}
+const CategoryItem = ({ item }:{item:item}) => {
   return (
     <Container>
       <Link to={`/products/${item.cat}`}>
